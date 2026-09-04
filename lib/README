@@ -1,0 +1,10 @@
+# Private Libraries
+
+Place custom libraries in subdirectories here.
+Each subdirectory should have its own library.json or be structured as:
+
+  lib/<library_name>/
+    src/
+    include/
+
+See: https://docs.platformio.org/en/latest/librarymanager/private.html

@@ -1,0 +1,9 @@
+.pio/
+.vscode/
+sdkconfig*
+data/config.json
+*.swp
+*.swo
+*~
+.DS_Store
+__pycache__/

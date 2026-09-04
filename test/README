@@ -1,0 +1,13 @@
+# Tests
+
+Place unit tests here using PlatformIO's Unity test framework.
+
+Structure:
+  test/test_<name>/
+    test_<name>.cpp
+
+Run with:
+  pio test -e native   (for host-based tests)
+  pio test -e esp32doit-devkit-v1   (for on-device tests)
+
+See: https://docs.platformio.org/en/latest/advanced/unit-testing/
