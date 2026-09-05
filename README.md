@@ -31,8 +31,7 @@ Embora a implementação atual seja focada em iluminação, a arquitetura do sis
 
 Dicas e sugestões para a melhoria do projeto são sempre bem-vindas! Se tiver alguma ideia ou dúvida, entre em contato comigo:
 
-- 📧 Email: [seu-email@exemplo.com]
-- 💼 LinkedIn: [link-do-seu-perfil]
+- 📧 Email: [hawkkauan@gmail.com]
 
 ## ⚠️ Aviso de Segurança
 
