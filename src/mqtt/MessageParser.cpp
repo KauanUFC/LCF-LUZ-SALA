@@ -6,8 +6,7 @@ CommandMessage MessageParser::parse(const char* topic, const byte* payload, size
 
     String topic_str(topic);
     int last_slash = topic_str.lastIndexOf('/');
-    int third_slash = topic_str.lastIndexOf('/', last_slash - 1);
-    cmd.light_id = topic_str.substring(third_slash + 1, last_slash);
+    cmd.light_id = topic_str.substring(last_slash + 1);
 
     JsonDocument doc;
     DeserializationError err = deserializeJson(doc, payload, len);

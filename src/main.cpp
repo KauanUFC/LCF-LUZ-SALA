@@ -76,7 +76,7 @@ void setup() {
 
     if (wifi.connected()) {
         ntp.begin();
-        mqtt.begin(config, on_mqtt_command);
+        mqtt.begin(config, on_mqtt_command, &ntp);
         health.begin(config, mqtt, wifi);
     }
 

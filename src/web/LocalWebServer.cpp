@@ -69,27 +69,16 @@ void LocalWebServer::setup_routes() {
 
     // REST: PUT /api/lights (control)
     server.on("/api/lights", HTTP_PUT, [this](AsyncWebServerRequest* request) {
-        if (!request->hasArg("plain")) {
-            request->send(400, "application/json", "{\"error\":\"missing body\"}");
-            return;
-        }
+        String light_id = request->arg("light_id");
+        String state_str = request->arg("state");
+        String brightness_str = request->arg("brightness");
 
-        String body = request->arg("plain");
-        JsonDocument doc;
-        DeserializationError err = deserializeJson(doc, body);
-        if (err) {
-            request->send(400, "application/json", "{\"error\":\"invalid json\"}");
-            return;
-        }
-
-        const char* light_id = doc["light_id"];
-        const char* state_str = doc["state"];
-        uint8_t brightness = doc["brightness"] | 100;
-
-        if (!light_id || !state_str) {
+        if (light_id.length() == 0 || state_str.length() == 0) {
             request->send(400, "application/json", "{\"error\":\"missing light_id or state\"}");
             return;
         }
+
+        uint8_t brightness = brightness_str.length() > 0 ? brightness_str.toInt() : 100;
 
         CommandMessage cmd;
         cmd.light_id = light_id;
@@ -97,7 +86,7 @@ void LocalWebServer::setup_routes() {
         cmd.msg_id = "";
         cmd.seq = 0;
         cmd.ts = millis() / 1000;
-        cmd.state = (strcmp(state_str, "ON") == 0);
+        cmd.state = (state_str == "ON");
         cmd.brightness = brightness;
         cmd.valid = true;
 
@@ -339,12 +328,12 @@ async function updateStatus(){
 }
 async function toggleLight(name,state,btn){
   btn.disabled=true;
-  await fetch(API+'/api/lights',{method:'PUT',body:JSON.stringify({light_id:name,state:state?'ON':'OFF'})});
+  await fetch(API+'/api/lights',{method:'PUT',body:'light_id='+name+'&state='+(state?'ON':'OFF')});
   updateStatus();
 }
 async function setBrightness(name,val,slider){
   const state = parseInt(val)>0?'ON':'OFF';
-  await fetch(API+'/api/lights',{method:'PUT',body:JSON.stringify({light_id:name,state:state,brightness:parseInt(val)})});
+  await fetch(API+'/api/lights',{method:'PUT',body:'light_id='+name+'&state='+state+'&brightness='+parseInt(val)});
   slider.parentElement.querySelector('.brightness-val').textContent=val;
 }
 async function restartDevice(){
