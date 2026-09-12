@@ -1,5 +1,6 @@
 #include "LocalWebServer.h"
 #include <ArduinoJson.h>
+#include <FFat.h>
 
 LocalWebServer::LocalWebServer() : server(80),
     lights(nullptr), storage(nullptr), config(nullptr),
@@ -193,6 +194,14 @@ void LocalWebServer::setup_routes() {
         ESP.restart();
     });
 
+    // REST: POST /api/reset (factory reset — erases config, enters AP mode)
+    server.on("/api/reset", HTTP_POST, [this](AsyncWebServerRequest* request) {
+        FFat.remove("/config.json");
+        request->send(200, "application/json", "{\"status\":\"reset\"}");
+        delay(500);
+        ESP.restart();
+    });
+
     // Catch-all: serve provision page in AP mode
     server.onNotFound([this](AsyncWebServerRequest* request) {
         if (ap_mode) {
@@ -294,6 +303,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .btn-lights{background:#1a5276}
 .btn-ota{background:#e94560}
 .btn-restart{background:#555}
+.btn-reset{background:#7f1d1d}
 </style></head><body>
 <h1>Light Control</h1>
 <div class="sub" id="deviceInfo">Loading...</div>
@@ -304,6 +314,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <a class="btn-lights" href="/lights">Lights</a>
 <a class="btn-ota" href="/update">OTA Update</a>
 <button class="btn-restart" onclick="restartDevice()">Restart</button>
+<button class="btn-reset" onclick="factoryReset()">Factory Reset</button>
 </div>
 <script>
 const API = '';
@@ -341,6 +352,12 @@ async function restartDevice(){
     fetch(API+'/api/restart',{method:'POST'}).catch(()=>{});
     alert('Device is restarting...\nYou will be redirected to the dashboard.');
     setTimeout(()=>{window.location.href='/';},4000);
+  }
+}
+async function factoryReset(){
+  if(confirm('This will erase all configuration! Continue?')){
+    await fetch('/api/reset',{method:'POST'});
+    alert('Configuration erased.\nDevice will restart in AP mode.\nConnect to the Light-Setup-XXXX network to reconfigure.');
   }
 }
 updateStatus();
