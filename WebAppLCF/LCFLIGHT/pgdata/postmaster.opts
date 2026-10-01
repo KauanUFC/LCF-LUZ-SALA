@@ -1,0 +1,1 @@
+/usr/lib/postgresql/16/bin/postgres "-D" "/home/panjoru/Documents/PlatformIO/Projects/TEST_ESP32_FIRMWARE_LCF/WebAppLCF/LCFLIGHT/pgdata"

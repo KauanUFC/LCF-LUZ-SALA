@@ -13,7 +13,7 @@ public:
 
 private:
     int pin;
-    const char* light_name;
+    String light_name;
     ButtonCallback callback;
     unsigned long last_debounce_time;
     unsigned long press_start;

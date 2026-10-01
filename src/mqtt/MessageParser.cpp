@@ -1,10 +1,24 @@
 #include "MessageParser.h"
 
+static bool is_valid_command_topic(const String& topic) {
+    if (!topic.startsWith("command/")) return false;
+    int slash_count = 0;
+    for (size_t i = 0; (i = topic.indexOf('/', i)) != -1; i++) {
+        slash_count++;
+        if (slash_count > 3) return false;
+    }
+    return slash_count == 3;
+}
+
 CommandMessage MessageParser::parse(const char* topic, const byte* payload, size_t len) {
     CommandMessage cmd;
     cmd.valid = false;
 
     String topic_str(topic);
+    if (!is_valid_command_topic(topic_str)) {
+        Serial.printf("[MQTT] Invalid topic format: %s\n", topic);
+        return cmd;
+    }
     int last_slash = topic_str.lastIndexOf('/');
     cmd.light_id = topic_str.substring(last_slash + 1);
 

@@ -81,15 +81,6 @@ void LightManager::fill_states_json(JsonArray& arr) const {
     }
 }
 
-void LightManager::fill_config_json(JsonArray& arr) const {
-    for (const auto* light : lights) {
-        JsonObject obj = arr.add<JsonObject>();
-        obj["name"] = light->get_name();
-        obj["state"] = light->is_on() ? "ON" : "OFF";
-        obj["brightness"] = light->get_brightness();
-    }
-}
-
 Light* LightManager::get_light(const char* name) {
     for (auto* light : lights) {
         if (strcmp(light->get_name(), name) == 0) {

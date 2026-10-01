@@ -69,7 +69,9 @@ void setup() {
     Serial.printf("\n=== TEST_ESP32_FIRMWARE_LCF v1.0.0 ===\n");
 
     storage.begin();
-    storage.load(config);
+    if (!storage.load(config) && config.wifi_ssid.length() == 0) {
+        storage.save(config);
+    }
 
     // Start provisioning AP if no saved config
     wifi.begin(storage, config);
@@ -128,6 +130,11 @@ void loop() {
     }
 
     web.tick();
+
+    if (web.restart_requested()) {
+        delay(100);
+        ESP.restart();
+    }
 
     // ── Event detection ──
     bool now_wifi = wifi.connected();

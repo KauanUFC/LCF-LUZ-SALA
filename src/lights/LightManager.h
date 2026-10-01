@@ -17,7 +17,6 @@ public:
     void reload(const DeviceConfig& cfg);
     void process_command(const CommandMessage& cmd);
     void fill_states_json(JsonArray& arr) const;
-    void fill_config_json(JsonArray& arr) const;
     Light* get_light(const char* name);
     size_t count() const;
 

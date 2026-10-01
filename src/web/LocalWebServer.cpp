@@ -4,7 +4,7 @@
 
 LocalWebServer::LocalWebServer() : server(80),
     lights(nullptr), storage(nullptr), config(nullptr),
-    health(nullptr), wifi(nullptr), ap_mode(false) {}
+    health(nullptr), wifi(nullptr), ap_mode(false), restart_pending(false) {}
 
 void LocalWebServer::begin(LightManager& lm, ConfigStorage& st,
                             DeviceConfig& cfg,
@@ -183,23 +183,20 @@ void LocalWebServer::setup_routes() {
 
         storage->save(*config);
         request->send(200, "application/json", "{\"status\":\"saved\",\"restart\":true}");
-        delay(2000);
-        ESP.restart();
+        restart_pending = true;
     });
 
     // REST: POST /api/restart
-    server.on("/api/restart", HTTP_POST, [](AsyncWebServerRequest* request) {
+    server.on("/api/restart", HTTP_POST, [this](AsyncWebServerRequest* request) {
         request->send(200, "application/json", "{\"status\":\"restarting\"}");
-        delay(300);
-        ESP.restart();
+        restart_pending = true;
     });
 
     // REST: POST /api/reset (factory reset — erases config, enters AP mode)
     server.on("/api/reset", HTTP_POST, [this](AsyncWebServerRequest* request) {
         FFat.remove("/config.json");
         request->send(200, "application/json", "{\"status\":\"reset\"}");
-        delay(500);
-        ESP.restart();
+        restart_pending = true;
     });
 
     // Catch-all: serve provision page in AP mode
@@ -226,8 +223,7 @@ void LocalWebServer::serve_provision_html(AsyncWebServerRequest* request) {
         storage->save(*config);
         request->send(200, "text/html",
             "<html><body><h2>Config saved!</h2><p>Device will restart...</p></body></html>");
-        delay(1000);
-        ESP.restart();
+        restart_pending = true;
         return;
     }
 
@@ -235,7 +231,10 @@ void LocalWebServer::serve_provision_html(AsyncWebServerRequest* request) {
 }
 
 void LocalWebServer::tick() {
-    // AsyncWebServer handles requests in background; nothing needed here.
+}
+
+bool LocalWebServer::restart_requested() {
+    return restart_pending;
 }
 
 // === PROGMEM HTML strings ===

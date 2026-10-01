@@ -14,6 +14,7 @@ public:
                HealthReporter& health, WifiManager& wifi,
                bool ap_mode = false);
     void tick();
+    bool restart_requested();
     AsyncWebServer* getServer() { return &server; }
 
 private:
@@ -24,6 +25,7 @@ private:
     HealthReporter* health;
     WifiManager* wifi;
     bool ap_mode;
+    bool restart_pending;
 
     void setup_routes();
     void serve_provision_html(AsyncWebServerRequest* request);
